@@ -1,8 +1,8 @@
-# Hox v2.0: Scoped, Recursive Session Projections over Propagator Networks
+# Hox: Scoped, Recursive Session Projections over Propagator Networks
 
 > *"An analogy for the Hox genes can be made to the role of a play director who calls which scene the actors should carry out next. If the play director calls the scenes in the wrong order, the overall play will be presented in the wrong order."*
 
-**Hox v2.0** is an experimental architectural prototype written in **pure functional Python 3.14**:
+**Hox** is an experimental architectural prototype written in **pure functional Python 3.14**:
 1. **Multiparty Session Types (MPST / Choreographies)**: Choice-guarded recursion ($\mu t$) with scoped projection that prunes non-participating roles.
 2. **Sussman Propagator Networks**: Monotonic spatial constraints (`separation_constraint`, `pin_constraint`) with structured result types (`SolveSuccess | SolveInconsistent | SolveStepLimit`).
 3. **The Hox Bridge**: Enforces the **"Curtains Closed" Privacy Rule** via projected footprint views (`project_tissue`), ensuring decision predicates physically cannot snoop on foreign cells.
