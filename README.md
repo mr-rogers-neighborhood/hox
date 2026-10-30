@@ -40,6 +40,37 @@
 
 ---
 
+## Potential Applications
+
+| Domain | How the Architecture Applies | Trade-offs & Fit |
+| :--- | :--- | :--- |
+| **Interactive & Infinite Canvases** | Generates proposed reflows (e.g. cards displacing neighbors, containers resizing to content) from drag/resize gestures. Emits clean batch data (`LayoutPlan`) on pointer release. | **Good Fit**: Solves overlap management locally without global solver lag. |
+| **Multi-Disciplinary CAD & Spatial Design** | Resolves local clearances and physical calculations within subsystems, while phased project handoffs follow a verified coordination protocol. | **Natural Fit**: Matches how structural and MEP engineering handoffs work. |
+| **Multi-Agent Systems** | Protocol layer coordinates agent turn-taking and message schemas; monotonic constraint network acts as a shared factual blackboard. | **Plausible Fit**: Prevents conversation loops and fact retraction. |
+
+---
+
+### Conceptual Influences
+
+The architecture draws on three distinct threads in systems design:
+* **Christopher Alexander (Generative Sequences)**: Separating the sequential, step-by-step unfolding of a structure (the order of decisions) from the local adaptation to spatial forces (geometry and clearances). The choreography represents the unfolding sequence; the propagators resolve local forces.
+* **Gerald Sussman & Alexey Radul (Propagators)**: Using autonomous, multi-directional constraint networks that settle to a fixed point through local monotonic accumulation, avoiding a central master equation.
+* **Alan Kay (Biological Scaling)**: Using a small set of selector directives (Hox genes) to parameterize a large collection of decentralized, locally communicating entities.
+
+---
+
+### Pragmatic Boundaries
+
+* **Good Use Cases**:
+  - Local interaction loops on an infinite canvas where cards need spatial rules (elastic displacement, container padding, zero-drift pins).
+  - Systems where continuous preview relaxation must remain cleanly decoupled from durable, single-batch document writes (CRDTs).
+  - Multi-party state transitions that need deadlock-free guarantees without manual lock management.
+* **Bad Use Cases / Anti-Patterns**:
+  - Mundane web CRUD applications where standard request-response pipelines are already well-understood.
+  - Distributed network locking (running MPST across peers over WebSockets breaks the offline-first, conflict-free guarantees of CRDTs).
+
+---
+
 ## Directory Structure
 
 ```
