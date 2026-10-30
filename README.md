@@ -1,22 +1,16 @@
 # Hox: Choreographed Constraint Networks for Reactive Interfaces
 
-> *"An analogy for the Hox genes can be made to the role of a play director who calls which scene the actors should carry out next. If the play director calls the scenes in the wrong order, the overall play will be presented in the wrong order."*
+Hox is an experimental architecture that separates how interactive components coordinate from how their spatial layout is calculated.
 
-Hox is an experimental architecture that separates how components coordinate from how their layout is calculated. 
+In typical UI architectures, state machines and layout solvers are tightly coupled. Hox decouples them into two complementary planes connected by a formal boundary:
 
-Written in pure functional Python 3.14, it brings together two distinct ideas:
-
-1. **An Interaction Protocol**: A high-level script governing component communication and multi-round negotiation. Built with Multiparty Session Types and choice-guarded recursion, it guarantees deadlock freedom, preserves turn-taking, and prunes uninvolved bystander components from loops.
-2. **A Spatial Solver**: A lightweight constraint engine that handles elastic reflow, pushing colliding cards and expanding containers. Built with Sussman Propagator Networks over interval bounds, it settles to a resting point in a few steps with zero coordinate drift.
-3. **A Footprint Bridge**: The seam between the two layers. Components make layout decisions using a scoped view (`project_tissue`), ensuring decision logic only sees local measurements and cannot snoop on foreign state.
-
----
-
-## Core Concept
+1. **Control Plane (Choreography)**: A high-level protocol governing multi-round negotiation, turn-taking, and fallback branches. Modeled with multiparty session types and choice-guarded recursion.
+2. **Data Plane (Propagator Network)**: A continuous constraint engine handling elastic reflow, collision bumping, and container sizing. Built on Sussman propagator networks over interval semilattices.
+3. **The Footprint Boundary**: A scoped projection (`project_tissue`) ensuring negotiating components only observe local bounding intervals and cannot inspect foreign state.
 
 * **The protocol decides when and who**: the sequence of negotiation phases.
-* **The propagator decides where and how much**: the coordinate bounds.
-* **Quiescence connects them**: the protocol only advances when the spatial constraints have settled.
+* **The propagator decides where and how much**: coordinate bounds and continuous relaxation.
+* **Quiescence connects them**: the protocol only advances once the spatial network settles to a fixed point.
 
 ```
                      Choice-Guarded Protocol
@@ -46,6 +40,17 @@ Written in pure functional Python 3.14, it brings together two distinct ideas:
 
 ---
 
+## Scope & Current Status
+
+This repository is a reference prototype exploring the boundary between session choreographies and propagator networks.
+
+* **Cluster Scale**: Validated on small card clusters (2 to 4 nodes) covering 1D bumping, container breathing, and multi-round fallback negotiation. Dense networks with cyclic dependencies have not been benchmarked.
+* **In-Process Runtime**: The session runtime executes in-memory within a single process. It models the local interaction lifecycle (gesture -> preview -> batch commit); it does not implement a distributed wire protocol over network sockets.
+* **Purity by Convention**: Implemented in Python 3.14 using frozen dataclasses and immutable transitions. Purity is maintained by architectural convention rather than compiler enforcement.
+* **Conceptual Framing**: The biological Hox analogy describes the systems relationship (a discrete regulatory control plane parameterizing a continuous spatial tissue), not a physical simulation.
+
+---
+
 ## Potential Applications
 
 | Domain | How the Architecture Applies | Trade-offs & Fit |
@@ -61,7 +66,7 @@ Written in pure functional Python 3.14, it brings together two distinct ideas:
 The architecture draws on three distinct threads in systems design:
 * **Christopher Alexander (Generative Sequences)**: Separating the sequential, step-by-step unfolding of a structure from local adaptation to spatial forces. The choreography represents the unfolding sequence; the propagators resolve local forces.
 * **Gerald Sussman & Alexey Radul (Propagators)**: Using autonomous, multi-directional constraint networks that settle to a fixed point through local monotonic accumulation, avoiding a central master equation.
-* **Alan Kay (Biological Scaling)**: Using a small set of selector directives (Hox genes) to parameterize a large collection of decentralized, locally communicating entities.
+* **Alan Kay (Biological Scaling)**: Using a small set of selector directives to parameterize a large collection of decentralized, locally communicating entities.
 
 ---
 
