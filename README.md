@@ -1,40 +1,41 @@
-# Hox: Functional Session Projections over Sussman Propagator Networks
+# Hox v2.0: Scoped, Recursive Session Projections over Propagator Networks
 
-> *"Only a tiny fraction of cells contain the master morphogenetic directives; the rest is reactive tissue."*
+> *"An analogy for the Hox genes can be made to the role of a play director who calls which scene the actors should carry out next. If the play director calls the scenes in the wrong order, the overall play will be presented in the wrong order."*
 
-**Hox** is an experimental architectural prototype written in **pure functional Python 3.14**:
-1. **Multiparty Session Types (MPST / Choreographies)**: Immutable Algebraic Data Types (ADTs) representing global protocols, projected via pure pattern-matching recursion into local Communicating Finite State Machines (CFSMs).
-2. **Sussman Propagator Networks**: Pure state transformers `State -> State` over an interval join-semilattice $[lo, hi]$, where quiescence is computed via a pure mathematical fixed-point loop ($fix(F)$).
-3. **The Hox Bridge**: An immutable `HoxState` snapshot combining discrete session states with continuous lattice states, transformed through pure functions without side-effects.
+**Hox v2.0** is an experimental architectural prototype written in **pure functional Python 3.14**:
+1. **Multiparty Session Types (MPST / Choreographies)**: Choice-guarded recursion ($\mu t$) with scoped projection that prunes non-participating roles.
+2. **Sussman Propagator Networks**: Monotonic spatial constraints (`separation_constraint`, `pin_constraint`) with structured result types (`SolveSuccess | SolveInconsistent | SolveStepLimit`).
+3. **The Hox Bridge**: Enforces the **"Curtains Closed" Privacy Rule** via projected footprint views (`project_tissue`), ensuring decision predicates physically cannot snoop on foreign cells.
 
 ---
 
-## Functional Architecture
+## Architectural Mechanisms
 
 ```
-                          Global Choreography ADT
-                   SendG("Canvas", "Sidebar", ..., cont)
-                                    │
-                         project(global, role)
-                                    ▼
-                      Projected Local Endpoint ADTs
-             SendL("Main", ...), RecvL("Canvas", ...), ChoiceL
-                                    │
-                                    ▼
-                 Immutable System Snapshot: HoxState
-                 ┌───────────────────────────────────┐
-                 │ endpoints: { Role: LocalState }   │
-                 │ tissue:    { Cell: Interval }     │
-                 │ props:     [ State -> State ]     │
-                 └─────────────────┬─────────────────┘
-                                   │
-              settle_tissue(state) │ Pure fixed-point: fix(F)
-                                   ▼
-                            Settled HoxState
-                                   │
-               decide_branch(state, decider, predicate)
-                                   ▼
-                 Deterministic Deadlock-Free Transition
+                     Choice-Guarded Recursive Protocol
+                   μ(Negotiate) . choice by Sidebar {
+                       Retry:  Sidebar -> Main : CounterOffer . Negotiate,
+                       Commit: Sidebar -> Main : Accept . end
+                   }
+                                  │
+                       Scoped project(global, role)
+                      (Prunes non-participating roles)
+                                  ▼
+                    Projected Local Endpoints (CFSMs)
+                    • Per-role isolated recursion environments
+                                  │
+                                  ▼
+                    Privacy Footprint View (No Snooping)
+                     project_tissue(tissue, footprint)
+                                  │
+                                  ▼
+                     Monotonic Spatial Propagation
+                     • separation_constraint (bump right)
+                     • pin_constraint (zero drift)
+                                  │
+                                  ▼
+                      Structured SolveResult
+                SolveSuccess | SolveInconsistent | SolveStepLimit
 ```
 
 ---
@@ -45,30 +46,29 @@
 hox/
 ├── propagator/
 │   ├── lattice.py          # Pure interval semilattice [lo, hi], merge, plus, minus
-│   ├── propagators.py      # Pure state transformers: State -> State (sum_constraint, etc.)
-│   └── engine.py           # Pure fixed-point solver: settle(state, propagators) -> (state, steps)
+│   ├── propagators.py      # sum_constraint, separation_constraint, pin_constraint
+│   └── engine.py           # Fixed-point solver returning SolveResult
 ├── session/
-│   ├── types.py            # Algebraic Data Types (ADTs): SendG, ChoiceG, EndG, SendL, RecvL...
-│   ├── projection.py       # Pure pattern-matching projection: project(Global, role) -> Local
-│   └── runtime.py          # Pure transition functions: step_send, step_receive, step_choose
+│   ├── types.py            # ADTs with recursion: RecG, VarG, RecL, VarL, ChoiceG, SendG...
+│   ├── projection.py       # Scoped projection with non-participating role pruning
+│   └── runtime.py          # Per-role unrolling and state transition functions
 ├── bridge/
-│   └── functional_bridge.py# Pure system state transformations: inject_constraint, settle_tissue...
-└── demo.py                 # Pure pipeline demo of 3-party layout negotiation
+│   └── functional_bridge.py# project_tissue (footprint views) & decide_branch
+└── demo.py                 # Multi-round negotiation & 3-card bump demo
 ```
 
 ---
 
 ## Running the Demo
 
-Execute the interactive functional demo:
-
 ```bash
 python3 -m hox.demo
 ```
 
-Runs the 3-party layout negotiation (`Canvas`, `Sidebar`, `MainContent`):
-* **Desktop (720px)**: The geometric tissue settles to $[0, 320]$ for the sidebar. Since $320 \ge 200$, Sidebar chooses branch `Fit` and Main receives `AcceptFit`.
-* **Split (480px)**: The geometric tissue settles to $[0, 80]$. Since $80 < 200$, Sidebar chooses branch `Collapse` and Main receives `DoCollapse`, claiming all 480px.
+### What You Will See:
+1. **Desktop Viewport (720px)**: Sidebar asks for Full Mode $[200, 300]\text{px}$. Fits on Round 1 and commits to 250px.
+2. **Tablet Viewport (520px)**: Sidebar asks for Full Mode. Contradiction detected (`SolveInconsistent`). Sidebar chooses `Retry` and counter-offers Compact Mode $[80, 150]\text{px}$. Fits on Round 2 and commits to 120px!
+3. **3-Card Spatial Bump**: Card A bumps Card B from 150px to 220px. Card C (pinned at 600px) has **zero drift** ($[600, 600]$).
 
 ---
 
@@ -77,4 +77,4 @@ Runs the 3-party layout negotiation (`Canvas`, `Sidebar`, `MainContent`):
 ```bash
 python3 -m unittest discover -s tests
 ```
-*(All tests execute in ~0.001s, verifying lattice arithmetic, fixed-point convergence, recursive projection, and pure state transitions).*
+*17 tests passing in ~0.001s*, verifying semilattice arithmetic, confluence under merge (CRDT-readiness), scoped recursive projection, structured failure modes, zero-drift spatial pinning, and footprint privacy.

@@ -2,7 +2,7 @@
 
 import unittest
 from hox.session import SendG, ChoiceG, EndG, project
-from hox.propagator import Interval, sum_constraint
+from hox.propagator import Interval, sum_constraint, SolveSuccess
 from hox.bridge import (
     HoxState,
     inject_constraint,
@@ -35,13 +35,11 @@ class TestFunctionalHoxBridge(unittest.TestCase):
         )
 
     def _init_system(self, canvas_width: float) -> HoxState:
-        # Endpoints
         endpoints = {
             "Canvas": project(self.proto, "Canvas"),
             "Sidebar": project(self.proto, "Sidebar"),
             "Main": project(self.proto, "Main"),
         }
-        # Initial tissue with multi-directional sum relation: Canvas = Sidebar + Main
         tissue = {
             "CanvasWidth": Interval.exact(canvas_width),
             "SidebarWidth": Interval.unconstrained(),
@@ -65,17 +63,20 @@ class TestFunctionalHoxBridge(unittest.TestCase):
         sys6 = inject_constraint(sys5, "MainWidth", Interval.at_least(400.0))
 
         # 3. Pure fixed point settlement (Quiescence)
-        sys7, steps = settle_tissue(sys6)
-        self.assertGreater(steps, 0)
+        sys7, res = settle_tissue(sys6)
+        self.assertIsInstance(res, SolveSuccess)
+        assert isinstance(res, SolveSuccess)
+        self.assertGreater(res.steps, 0)
 
         # Settled: Canvas=700, Main>=400 -> Sidebar in [0, 300]
         self.assertEqual(sys7.tissue["SidebarWidth"].hi, 300.0)
 
-        # 4. Sidebar decides branch based on whether space >= 200px
+        # 4. Sidebar decides branch using its declared footprint
         sys8, chosen = decide_branch(
             sys7,
             "Sidebar",
-            lambda tissue: "Fit" if tissue["SidebarWidth"].hi >= 200.0 else "Collapse"
+            footprint=frozenset(["SidebarWidth"]),
+            decision_fn=lambda local_view: "Fit" if local_view["SidebarWidth"].hi >= 200.0 else "Collapse"
         )
         self.assertEqual(chosen, "Fit")
 
@@ -107,7 +108,8 @@ class TestFunctionalHoxBridge(unittest.TestCase):
         sys6 = inject_constraint(sys5, "MainWidth", Interval.at_least(400.0))
 
         # Settle
-        sys7, _ = settle_tissue(sys6)
+        sys7, res = settle_tissue(sys6)
+        self.assertIsInstance(res, SolveSuccess)
         # Canvas=450, Main>=400 -> Sidebar max is 50px (< 200px)
         self.assertEqual(sys7.tissue["SidebarWidth"].hi, 50.0)
 
@@ -115,7 +117,8 @@ class TestFunctionalHoxBridge(unittest.TestCase):
         sys8, chosen = decide_branch(
             sys7,
             "Sidebar",
-            lambda tissue: "Fit" if tissue["SidebarWidth"].hi >= 200.0 else "Collapse"
+            footprint=frozenset(["SidebarWidth"]),
+            decision_fn=lambda local_view: "Fit" if local_view["SidebarWidth"].hi >= 200.0 else "Collapse"
         )
         self.assertEqual(chosen, "Collapse")
 

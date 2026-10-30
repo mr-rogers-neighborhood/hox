@@ -1,5 +1,6 @@
 from .functional_bridge import (
     HoxState,
+    project_tissue,
     inject_constraint,
     settle_tissue,
     send_message,
@@ -10,6 +11,7 @@ from .functional_bridge import (
 
 __all__ = [
     "HoxState",
+    "project_tissue",
     "inject_constraint",
     "settle_tissue",
     "send_message",

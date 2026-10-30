@@ -72,3 +72,47 @@ def bounds_constraint(cell: str, lo: float = -float('inf'), hi: float = float('i
         return state
 
     return prop
+
+
+def separation_constraint(
+    left_cell: str,
+    right_cell: str,
+    width: float = 0.0,
+    gap: float = 0.0
+) -> Propagator:
+    """Monotonic spatial separation constraint: right.lo >= left.lo + width + gap.
+    
+    Ensures that right_cell cannot overlap left_cell along the directional push axis.
+    """
+    def prop(state: State) -> State:
+        left_val = state.get(left_cell, Interval.unconstrained())
+        right_val = state.get(right_cell, Interval.unconstrained())
+
+        min_right_x = left_val.lo + width + gap
+        if right_val.lo < min_right_x:
+            new_right = merge(right_val, Interval.at_least(min_right_x))
+            next_state = dict(state)
+            next_state[right_cell] = new_right
+            return next_state
+        return state
+
+    return prop
+
+
+def pin_constraint(cell: str, fixed_coord: float) -> Propagator:
+    """Rigid spatial pin: forces cell to exact coordinate [fixed_coord, fixed_coord].
+    
+    Guarantees zero-drift for stationary cards outside of a collision wave.
+    """
+    pinned = Interval.exact(fixed_coord)
+
+    def prop(state: State) -> State:
+        current = state.get(cell, Interval.unconstrained())
+        merged = merge(current, pinned)
+        if merged != current:
+            next_state = dict(state)
+            next_state[cell] = merged
+            return next_state
+        return state
+
+    return prop

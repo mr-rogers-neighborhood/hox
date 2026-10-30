@@ -10,6 +10,8 @@ from hox.propagator import (
     sum_constraint,
     inject,
     settle,
+    SolveSuccess,
+    SolveInconsistent,
 )
 
 
@@ -43,10 +45,12 @@ class TestFunctionalPropagatorEngine(unittest.TestCase):
             "C": Interval.unconstrained(),
         }
         props = [sum_constraint("A", "B", "C")]
-        settled, steps = settle(state, props)
+        res = settle(state, props)
 
-        self.assertEqual(settled["C"].lo, 500)
-        self.assertEqual(settled["C"].hi, 500)
+        self.assertIsInstance(res, SolveSuccess)
+        assert isinstance(res, SolveSuccess)
+        self.assertEqual(res.tissue["C"].lo, 500)
+        self.assertEqual(res.tissue["C"].hi, 500)
 
     def test_backward_deduction(self):
         # C=400, B=150 -> deduce A=250
@@ -56,10 +60,12 @@ class TestFunctionalPropagatorEngine(unittest.TestCase):
             "C": Interval.exact(400),
         }
         props = [sum_constraint("A", "B", "C")]
-        settled, steps = settle(state, props)
+        res = settle(state, props)
 
-        self.assertEqual(settled["A"].lo, 250)
-        self.assertEqual(settled["A"].hi, 250)
+        self.assertIsInstance(res, SolveSuccess)
+        assert isinstance(res, SolveSuccess)
+        self.assertEqual(res.tissue["A"].lo, 250)
+        self.assertEqual(res.tissue["A"].hi, 250)
 
     def test_interval_relaxation_and_quiescence(self):
         # A in [200, 350], B >= 400, C == 700
@@ -69,13 +75,14 @@ class TestFunctionalPropagatorEngine(unittest.TestCase):
             "Canvas": Interval.exact(700),
         }
         props = [sum_constraint("Sidebar", "Main", "Canvas")]
-        settled, steps = settle(state, props)
+        res = settle(state, props)
 
-        # C = 700. Since B >= 400, A = C - B <= 700 - 400 = 300.
-        self.assertEqual(settled["Sidebar"].lo, 200)
-        self.assertEqual(settled["Sidebar"].hi, 300)
-        self.assertEqual(settled["Main"].lo, 400)
-        self.assertEqual(settled["Main"].hi, 500)
+        self.assertIsInstance(res, SolveSuccess)
+        assert isinstance(res, SolveSuccess)
+        self.assertEqual(res.tissue["Sidebar"].lo, 200)
+        self.assertEqual(res.tissue["Sidebar"].hi, 300)
+        self.assertEqual(res.tissue["Main"].lo, 400)
+        self.assertEqual(res.tissue["Main"].hi, 500)
 
 
 if __name__ == "__main__":

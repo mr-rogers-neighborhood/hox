@@ -69,12 +69,12 @@ class TestFunctionalSession(unittest.TestCase):
         bob_st = RecvL("Alice", "Hello", EndL())
 
         # Alice sends Hello
-        next_alice, msg = step_send(alice_st, "Alice", "Bob", "Hello", payload=123)
+        next_alice, msg, env_a = step_send(alice_st, "Alice", "Bob", "Hello", payload=123)
         self.assertEqual(next_alice, EndL())
         self.assertEqual(msg, Message("Alice", "Bob", "Hello", 123))
 
         # Bob receives Hello
-        next_bob = step_receive(bob_st, "Bob", msg)
+        next_bob, env_b = step_receive(bob_st, "Bob", msg)
         self.assertEqual(next_bob, EndL())
 
     def test_protocol_violation(self):

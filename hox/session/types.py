@@ -1,4 +1,4 @@
-"""Algebraic Data Types (ADTs) for Global and Local Session Types."""
+"""Algebraic Data Types (ADTs) for Global and Local Session Types with Recursion."""
 
 from __future__ import annotations
 from typing import Dict, Union, Any, Optional
@@ -33,13 +33,32 @@ class ChoiceG:
 
 
 @dataclass(frozen=True)
+class RecG:
+    """Recursion / loop header labeled with tag: μ(tag) . body"""
+    tag: str
+    body: Global
+
+    def __str__(self) -> str:
+        return f"μ({self.tag}) . {self.body}"
+
+
+@dataclass(frozen=True)
+class VarG:
+    """Jump back to loop header tag: tag"""
+    tag: str
+
+    def __str__(self) -> str:
+        return f"{self.tag}"
+
+
+@dataclass(frozen=True)
 class EndG:
     """Protocol completion."""
     def __str__(self) -> str:
         return "end"
 
 
-Global = Union[SendG, ChoiceG, EndG]
+Global = Union[SendG, ChoiceG, RecG, VarG, EndG]
 
 
 # ---------------------------------------------------------------------------
@@ -90,13 +109,32 @@ class ExternalChoiceL:
 
 
 @dataclass(frozen=True)
+class RecL:
+    """Local loop header: μ(tag) . body"""
+    tag: str
+    body: Local
+
+    def __str__(self) -> str:
+        return f"μ({self.tag}) . {self.body}"
+
+
+@dataclass(frozen=True)
+class VarL:
+    """Local jump back to tag"""
+    tag: str
+
+    def __str__(self) -> str:
+        return f"{self.tag}"
+
+
+@dataclass(frozen=True)
 class EndL:
     """Local endpoint termination."""
     def __str__(self) -> str:
         return "end"
 
 
-Local = Union[SendL, RecvL, InternalChoiceL, ExternalChoiceL, EndL]
+Local = Union[SendL, RecvL, InternalChoiceL, ExternalChoiceL, RecL, VarL, EndL]
 
 
 # ---------------------------------------------------------------------------
@@ -114,4 +152,3 @@ class Message:
     def __str__(self) -> str:
         p_str = f"({self.payload})" if self.payload is not None else ""
         return f"[{self.sender} -> {self.receiver} : {self.label}{p_str}]"
-
