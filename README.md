@@ -45,7 +45,7 @@
 | Domain | How the Architecture Applies | Trade-offs & Fit |
 | :--- | :--- | :--- |
 | **Interactive & Infinite Canvases** | Generates proposed reflows (e.g. cards displacing neighbors, containers resizing to content) from drag/resize gestures. Emits clean batch data (`LayoutPlan`) on pointer release. | **Good Fit**: Solves overlap management locally without global solver lag. |
-| **Multi-Disciplinary CAD & Spatial Design** | Resolves local clearances and physical calculations within subsystems, while phased project handoffs follow a verified coordination protocol. | **Natural Fit**: Matches how structural and MEP engineering handoffs work. |
+| **BIM & Spatial Coordination (CAD)** | Local spatial conflict avoidance (e.g. beam-duct clearance, rebar spacing). Proposes minimum component adjustments without triggering global re-renders. | **Good Fit for Geometry**: A spatial assistant for layout conflicts, *not* a structural calculation/FEA engine. |
 | **Multi-Agent Systems** | Protocol layer coordinates agent turn-taking and message schemas; monotonic constraint network acts as a shared factual blackboard. | **Plausible Fit**: Prevents conversation loops and fact retraction. |
 
 ---
@@ -62,12 +62,14 @@ The architecture draws on three distinct threads in systems design:
 ### Pragmatic Boundaries
 
 * **Good Use Cases**:
-  - Local interaction loops on an infinite canvas where cards need spatial rules (elastic displacement, container padding, zero-drift pins).
-  - Systems where continuous preview relaxation must remain cleanly decoupled from durable, single-batch document writes (CRDTs).
-  - Multi-party state transitions that need deadlock-free guarantees without manual lock management.
+  - **Local interaction loops on an infinite canvas**: Where cards need spatial rules (elastic displacement, container padding, zero-drift pins).
+  - **Interactive modeling assistance**: Recommending minimum adjustments when components collide, previewing before committing.
+  - **Decoupled previews vs. durable writes**: Where continuous preview relaxation is cleanly separated from durable, single-batch document writes (CRDTs).
+  - **Multi-party state transitions**: Verified protocols that prevent deadlocks during phased handoffs.
 * **Bad Use Cases / Anti-Patterns**:
-  - Mundane web CRUD applications where standard request-response pipelines are already well-understood.
-  - Distributed network locking (running MPST across peers over WebSockets breaks the offline-first, conflict-free guarantees of CRDTs).
+  - **Core structural analysis & FEA (Finite Element Analysis)**: Hox does not solve continuous mechanics equations, stress tensors, nonlinear material yielding, or seismic code checks. It assists with spatial clearance and layout, not structural safety.
+  - **Mundane web CRUD**: Forms, user accounts, and database queries where standard request-response pipelines are already well-understood.
+  - **Distributed network locking**: Running MPST across peers over WebSockets breaks the offline-first, conflict-free guarantees of CRDTs.
 
 ---
 
