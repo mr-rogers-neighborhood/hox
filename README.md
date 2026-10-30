@@ -1,4 +1,4 @@
-# Hox: Hox: Choreographed Constraint Networks for Reactive Layouts
+# Hox: Choreographed Constraint Networks for Reactive Layouts
 
 > *"An analogy for the Hox genes can be made to the role of a play director who calls which scene the actors should carry out next. If the play director calls the scenes in the wrong order, the overall play will be presented in the wrong order."*
 
