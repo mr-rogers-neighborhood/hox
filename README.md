@@ -1,4 +1,4 @@
-# Hox: Choreographed Constraint Networks for Reactive Interfaces
+# Hox
 
 Hox is an experimental architecture that separates how interactive components coordinate from how their spatial layout is calculated.
 
