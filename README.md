@@ -44,7 +44,7 @@ In typical UI architectures, state machines and layout solvers are tightly coupl
 
 This repository is a reference prototype exploring the boundary between session choreographies and propagator networks.
 
-* **Cluster Scale**: Validated on small card clusters (2 to 4 nodes) covering 1D bumping, container breathing, and multi-round fallback negotiation. Dense networks with cyclic dependencies have not been benchmarked.
+* **Cluster Scale**: Exercised by the demo and test suite on 2–4 node clusters; dense cyclic networks not benchmarked.
 * **In-Process Runtime**: The session runtime executes in-memory within a single process. It models the local interaction lifecycle (gesture -> preview -> batch commit); it does not implement a distributed wire protocol over network sockets.
 * **Purity by Convention**: Implemented in Python 3.14 using frozen dataclasses and immutable transitions. Purity is maintained by architectural convention rather than compiler enforcement.
 * **Conceptual Framing**: The biological Hox analogy describes the systems relationship (a discrete regulatory control plane parameterizing a continuous spatial tissue).
@@ -76,7 +76,6 @@ The architecture draws on three distinct threads in systems design:
   - Local interaction loops on an infinite canvas where cards need spatial rules like elastic displacement, container padding, and zero-drift pins.
   - Interactive modeling assistance that recommends minimum adjustments when components collide, previewing before committing.
   - Decoupled previews where continuous relaxation is cleanly separated from durable, single-batch document writes.
-  - Multi-party state transitions that need deadlock-free guarantees without manual lock management.
 * **Bad Use Cases & Anti-Patterns**:
   - Core structural analysis: Hox does not solve continuous mechanics equations, stress tensors, nonlinear material yielding, or seismic code checks. It assists with spatial clearance and layout, not structural safety.
   - Everyday CRUD: Forms, user accounts, and database queries where standard request-response pipelines are already well-understood.
