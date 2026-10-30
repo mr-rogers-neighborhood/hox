@@ -47,7 +47,7 @@ This repository is a reference prototype exploring the boundary between session 
 * **Cluster Scale**: Validated on small card clusters (2 to 4 nodes) covering 1D bumping, container breathing, and multi-round fallback negotiation. Dense networks with cyclic dependencies have not been benchmarked.
 * **In-Process Runtime**: The session runtime executes in-memory within a single process. It models the local interaction lifecycle (gesture -> preview -> batch commit); it does not implement a distributed wire protocol over network sockets.
 * **Purity by Convention**: Implemented in Python 3.14 using frozen dataclasses and immutable transitions. Purity is maintained by architectural convention rather than compiler enforcement.
-* **Conceptual Framing**: The biological Hox analogy describes the systems relationship (a discrete regulatory control plane parameterizing a continuous spatial tissue), not a physical simulation.
+* **Conceptual Framing**: The biological Hox analogy describes the systems relationship (a discrete regulatory control plane parameterizing a continuous spatial tissue).
 
 ---
 
