@@ -50,6 +50,8 @@ This repository is a reference prototype exploring the boundary between session 
 * **In-Process Runtime**: The session runtime executes in-memory within a single process. It models the local interaction lifecycle (gesture -> preview -> batch commit); it does not implement a distributed wire protocol over network sockets.
 * **Conceptual Framing**: The biological Hox analogy describes the systems relationship (a discrete regulatory control plane parameterizing a continuous spatial tissue).
 
+"An analogy for the Hox genes can be made to the role of a play director who calls which scene the actors should carry out next. If the play director calls the scenes in the wrong order, the overall play will be presented in the wrong order."
+
 ---
 
 ## Potential Applications
