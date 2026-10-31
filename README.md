@@ -6,8 +6,6 @@ In typical UI architectures, state machines and layout solvers are tightly coupl
 
 [Suite Canvas using similar principles for auto-layouts](https://github.com/mr-rogers-neighborhood/suite-canvas)
 
-![Suite Canvas using the same principles for auto-layouts](https://i.imgduck.com/u/8I9KqJ.gif)
-
 1. **Control Plane (Choreography)**: A high-level protocol governing multi-round negotiation, turn-taking, and fallback branches. Modeled with multiparty session types and choice-guarded recursion.
 2. **Data Plane (Propagator Network)**: A continuous constraint engine handling elastic reflow, collision bumping, and container sizing. Built on Sussman propagator networks over interval semilattices.
 3. **The Footprint Boundary**: A scoped projection (`project_tissue`) ensuring negotiating components only observe local bounding intervals and cannot inspect foreign state.
