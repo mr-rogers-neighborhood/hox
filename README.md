@@ -2,7 +2,7 @@
 
 Hox is an experimental architecture that separates how interactive components coordinate from how their spatial layout is calculated.
 
-In typical UI architectures, state machines and layout solvers are tightly coupled. Hox decouples them into two complementary planes connected by a formal boundary:
+In typical UI architectures, state machines and layout solvers are tightly coupled. Hox decouples them into two complementary planes connected by a boundary:
 
 1. **Control Plane (Choreography)**: A high-level protocol governing multi-round negotiation, turn-taking, and fallback branches. Modeled with multiparty session types and choice-guarded recursion.
 2. **Data Plane (Propagator Network)**: A continuous constraint engine handling elastic reflow, collision bumping, and container sizing. Built on Sussman propagator networks over interval semilattices.
