@@ -5,6 +5,7 @@ Hox is an experimental architecture that separates how interactive components co
 In typical UI architectures, state machines and layout solvers are tightly coupled. Hox decouples them into two complementary planes connected by a boundary:
 
 ![Suite Canvas using the same principles for auto-layouts](https://i.imgduck.com/u/8I9KqJ.gif)
+
 [Suite Canvas using similar principles for auto-layouts](https://github.com/mr-rogers-neighborhood/suite-canvas)
 
 1. **Control Plane (Choreography)**: A high-level protocol governing multi-round negotiation, turn-taking, and fallback branches. Modeled with multiparty session types and choice-guarded recursion.
